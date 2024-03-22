@@ -1,0 +1,30 @@
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: #333; /* Choisir la couleur de fond souhaitée */
+    color: #fff; /* Choisir la couleur du texte */
+  }
+  
+  nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  nav ul li {
+    display: inline-block;
+    margin-right: 20px; /* Ajuster l'espacement entre les éléments */
+  }
+  
+  nav ul li a {
+    text-decoration: none;
+    color: #fff; /* Choisir la couleur du lien */
+    transition: color 0.3s ease; /* Animation de transition de couleur */
+  }
+  
+  nav ul li a:hover {
+    color: #ffd700; /* Choisir la couleur au survol */
+  }
+  
