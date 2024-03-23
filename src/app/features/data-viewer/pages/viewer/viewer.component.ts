@@ -14,21 +14,20 @@ import { CommonModule } from '@angular/common';
 export class ViewerComponent {
   public chart: any;
   public jsonData: any;
-  fileNames: string[] = [];
-  public datas : string[] = [];
+  fileNamesCheckBox: string[] = [];
+  public checkboxNameSelected : string[] = [];
 
   constructor(private fileParserService: FileParserService,
     private fileService: FileService) { }
 
   ngOnInit() {
-    this.fileNames = this.fileService.getFilesName();
+    this.fileNamesCheckBox = this.fileService.getFilesName();
     this.init();
   }
 
   init () {
-    this.fileParserService.getCsvData(this.datas) //nb_naissance_1900_2019
+    this.fileParserService.getCsvData(this.checkboxNameSelected) //nb_naissance_1900_2019
     .subscribe(data => {
-      console.log(data);
       this.jsonData = data;
       console.log(this.jsonData);
       // this.jsonData = this.fileParserService.parseCsvData(this.jsonData);
@@ -40,18 +39,15 @@ export class ViewerComponent {
     let fileName = event.target.id;
     let isChecked = event.target.checked;
 
-    if (!isChecked && this.datas.includes(fileName)) {
-      this.datas.splice(this.datas.indexOf(fileName), 1);
-    } else if (isChecked && !this.datas.includes(fileName)) {
-      this.datas.push(fileName);
+    if (!isChecked && this.checkboxNameSelected.includes(fileName)) {
+      this.checkboxNameSelected.splice(this.checkboxNameSelected.indexOf(fileName), 1);
+    } else if (isChecked && !this.checkboxNameSelected.includes(fileName)) {
+      this.checkboxNameSelected.push(fileName);
     }
     this.init();
   }
 
   createChart() {
-  
-    console.log(this.jsonData.x, this.jsonData.y);
-    
     if (this.chart) {
       this.chart.destroy();
     }
@@ -60,13 +56,7 @@ export class ViewerComponent {
 
       data: {// values on X-Axis
         labels: this.jsonData.x, 
-	       datasets: [
-          {
-            label: "Nombre naissances",
-            data: this.jsonData.y,
-            backgroundColor: 'blue'
-          }
-        ]
+	      datasets: this.jsonData.y,
       },
       options: {
         aspectRatio:2.5

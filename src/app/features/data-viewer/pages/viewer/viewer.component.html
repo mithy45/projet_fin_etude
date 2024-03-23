@@ -1,6 +1,6 @@
 <p>viewer works!</p>
 <ul>
-    <li *ngFor="let fileName of fileNames">
+    <li *ngFor="let fileName of fileNamesCheckBox">
       <input (change)="onChange($event)" type="checkbox" [id]="fileName" [value]="fileName">
       <label [for]="fileName">{{ fileName }}</label>
     </li>
