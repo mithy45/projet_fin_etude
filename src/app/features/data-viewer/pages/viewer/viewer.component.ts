@@ -3,11 +3,12 @@ import { Chart } from 'chart.js/auto';
 import { FileParserService } from '../../../../core/services/file-parser.service';
 import { FileService } from '../../../../core/services/file.service';
 import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-viewer',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './viewer.component.html',
   styleUrl: './viewer.component.scss'
 })  
@@ -16,9 +17,18 @@ export class ViewerComponent {
   public jsonData: any;
   fileNamesCheckBox: string[] = [];
   public checkboxNameSelected : string[] = [];
+  filterForm: FormGroup;
+  selectXValues = [];
+  selectYValues = [];
 
   constructor(private fileParserService: FileParserService,
-    private fileService: FileService) { }
+    private fileService: FileService,
+    private fb: FormBuilder) {
+      this.filterForm = this.fb.group({
+        abscisse: [],
+        ordonnee: []
+      });
+    }
 
   ngOnInit() {
     this.fileNamesCheckBox = this.fileService.getFilesName();
@@ -63,5 +73,9 @@ export class ViewerComponent {
       }
       
     });
+  }
+
+  onSelect () {
+
   }
 }

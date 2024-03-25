@@ -5,6 +5,16 @@
       <label [for]="fileName">{{ fileName }}</label>
     </li>
 </ul>
+
+<form [formGroup]="filterForm">
+  <select formControlName="abscisse" (change)="onSelect()">
+    <option [value]="value" *ngFor="let value of selectXValues">{{value}}</option>
+  </select>
+  <select formControlName="ordonnee" (change)="onSelect()">
+    <option [value]="value" *ngFor="let value of selectYValues">{{value}}</option>
+  </select>
+</form>
+
 <div class="chart-container">
     <canvas  id="MyChart" >{{ chart }}</canvas>
 </div>

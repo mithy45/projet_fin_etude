@@ -1,13 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { FileService } from './file.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FileParserService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient,
+    private fileService: FileService) { }
 
   // {
   //   x: [],
@@ -27,7 +29,6 @@ export class FileParserService {
       for (let i = 0; i < files.length; i++) {
         this.http.get('../../assets/bdd/' + files[i] + '.csv', {responseType: 'text'}).subscribe(data => {
           datas.push(this.parseCsvData(data));
-          observer.next(datas);
           if (i == files.length - 1) {
             datas = this.mergeData(datas, files);
             observer.next(datas);
@@ -38,19 +39,37 @@ export class FileParserService {
     return observer;
   }
 
-  parseCsvData(data: any, x: number = 0, y: number = 1, yLabel: string = 'yLabel') {
+  readCsvFile (data:any) {
+    let response : any = {
+      "column" : [],
+      "data" : [],
+    };
     data = data.replaceAll('\r', '');
     data = data.replaceAll(',', '.');
+
     let lines = data.split('\n');
+    for (let i = 0; i < lines.length; i++) {
+      let column = lines[i].split(";");
+      if (i == 0) {
+        response.column = column;
+      }
+      else {
+        response.data.push(column);
+      }
+    } 
+    return response;
+  }
+
+  parseCsvData(data: any, x: number = 0, y: number = 1, yLabel: string = 'yLabel') {
+    let dataFormat = this.readCsvFile(data);
     let parseData : any = {
       x: [],
       y: [],
     };
     
-    for (let line of lines) {
-      let column = line.split(";");
-      parseData.x.push(column[x]);
-      parseData.y.push(column[y]);
+    for (let line of dataFormat.data) {
+      parseData.x.push(line[0]);
+      parseData.y.push(line[1]);
     }
     
     return parseData;
@@ -101,5 +120,22 @@ export class FileParserService {
       }
     });
     return parseData;
+  }
+
+  getCsvColumn(): Observable<any[]> {
+    let datas : any[] = [];
+    const observer = new Observable<any[]>(observer => {
+      let allCsvfile = this.fileService.getFilesName();
+      for (let i = 0; i < allCsvfile.length; i++) {
+        this.http.get('../../assets/bdd/' + allCsvfile[i] + '.csv', {responseType: 'text'}).subscribe(data => {
+          // datas.push(this.parseCsvData(data));
+          // if (i == files.length - 1) {                 A FINALISER
+          //   datas = this.mergeData(datas, files);
+          //   observer.next(datas);
+          // }
+        });
+      }
+    });
+    return observer;
   }
 }
