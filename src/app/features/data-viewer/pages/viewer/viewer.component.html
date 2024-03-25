@@ -1,1 +1,10 @@
 <p>viewer works!</p>
+<ul>
+    <li *ngFor="let fileName of fileNamesCheckBox">
+      <input (change)="onChange($event)" type="checkbox" [id]="fileName" [value]="fileName">
+      <label [for]="fileName">{{ fileName }}</label>
+    </li>
+</ul>
+<div class="chart-container">
+    <canvas  id="MyChart" >{{ chart }}</canvas>
+</div>
