@@ -30,12 +30,9 @@ export class BirthRateGraphComponent {
       this.chart.destroy();
     }
 
-
-
     const pointBackgroundColors = this.jsonData.x.map((_: any, index: number) => this.important_point.includes(index + 1900) ? 'red' : 'blue');
     this.jsonData.y[0].pointBackgroundColor = pointBackgroundColors;
     this.jsonData.y[0].pointRadius = 5;
-    console.log(this.jsonData.y)
     this.chart = new Chart("Birth-Rate-Graph", {
       type: 'line',
 
@@ -44,8 +41,12 @@ export class BirthRateGraphComponent {
         datasets: this.jsonData.y,
       },
       options: {
+          responsive: true,
           aspectRatio: 2.5,
           plugins: {
+            legend: {
+              onClick: (e) => e.native?.stopPropagation()
+            },
             tooltip: {
               mode: 'index',
               intersect: false,
