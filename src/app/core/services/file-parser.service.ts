@@ -27,7 +27,6 @@ export class FileParserService {
       for (let i = 0; i < files.length; i++) {
         this.http.get('../../assets/bdd/' + files[i] + '.csv', {responseType: 'text'}).subscribe(data => {
           datas.push(this.parseCsvData(data));
-          observer.next(datas);
           if (i == files.length - 1) {
             datas = this.mergeData(datas, files);
             observer.next(datas);
