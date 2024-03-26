@@ -11,18 +11,7 @@ export class FileParserService {
   constructor(private http: HttpClient,
     private fileService: FileService) { }
 
-  // {
-  //   x: [],
-  //   y: [
-  //     [
-  //       data: [],
-  //       labelData
-  //     ],
-  //   ]
-  // }
-
-  
-
+  // Récupère le fichier, le lis et applique les autres fonctions.
   getCsvData(files: string[]): Observable<any[]> {
     let datas : any[] = [];
     const observer = new Observable<any[]>(observer => {
@@ -39,6 +28,7 @@ export class FileParserService {
     return observer;
   }
 
+  // Lis un csv text.
   readCsvFile (data:any) {
     let response : any = {
       "column" : [],
@@ -51,23 +41,29 @@ export class FileParserService {
     for (let i = 0; i < lines.length; i++) {
       let column = lines[i].split(";");
       if (i == 0) {
+        column.shift();
         response.column = column;
       }
       else {
         response.data.push(column);
       }
-    } 
+    }
     return response;
   }
 
+  // EDIT params
+  // Parse un fichier.
   parseCsvData(data: any, x: number = 0, y: number = 1, yLabel: string = 'yLabel') {
+  
     let dataFormat = this.readCsvFile(data);
     let parseData : any = {
       x: [],
       y: [],
+      column: dataFormat.column,
     };
     
     for (let line of dataFormat.data) {
+      // EDIT.
       parseData.x.push(line[0]);
       parseData.y.push(line[1]);
     }
@@ -75,10 +71,13 @@ export class FileParserService {
     return parseData;
   }
 
+  // Fusionne les données parsées pour chaque fichier.
   mergeData (datas: any, fileNames: any) {
+    console.log(datas);
     let parseData : any = {
       x: [],
       y: [],
+      column: [],
     };
 
     for (let i = 0; i < datas.length; i++) {
@@ -86,6 +85,11 @@ export class FileParserService {
         label: fileNames[i],
         data: [],
       });
+      for (let j = 0; j < datas[i].column.length; j++) {
+        // parseData.column.push(datas[i].column[j] + " (" + fileNames[i] + ")");
+        let labels = this.formatSelectLabels(datas[i].column[j], fileNames[i]);
+        parseData.column.push(labels);
+      }
     }
 
     if (!datas) {
@@ -119,6 +123,8 @@ export class FileParserService {
         parseData.y[i].data.push(datas[i].y[indexList[i]]);
       }
     });
+    console.log("tutu");
+    console.log(parseData);
     return parseData;
   }
 
@@ -137,5 +143,27 @@ export class FileParserService {
       }
     });
     return observer;
+  }
+
+  formatSelectLabels (data: any, fileName:any) {
+    let response = {
+      label : "",
+      id: "",
+    }
+    response.label = data + " (" + fileName + ")";
+    response.id = data + "_-_" + fileName;
+    return response;
+  }
+
+  parseSelectLabel (data: any) {
+    let response = {
+      column: "",
+      fileName: "",
+    }
+    let tmp = data.replace(")", "");
+    tmp = tmp.split("_-_");
+    response.column = tmp[0];
+    response.fileName = tmp[1];
+    return response;
   }
 }
