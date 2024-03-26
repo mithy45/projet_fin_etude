@@ -11,6 +11,9 @@ export class FileService {
     return [
       'naissances',
       'mortalite_infantile',
+      'indice de fécondite',
+      'deces',
+      'population_francaise',
       // Ajoutez d'autres noms de fichiers CSV ici
     ];
   }
