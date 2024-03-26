@@ -1,10 +1,25 @@
 <p>viewer works!</p>
 <ul>
-    <li *ngFor="let fileName of fileNamesCheckBox">
-      <input (change)="onChange($event)" type="checkbox" [id]="fileName" [value]="fileName">
-      <label [for]="fileName">{{ fileName }}</label>
-    </li>
+  <li *ngFor="let fileName of fileNamesCheckBox">
+    <input (change)="onChange($event)" type="checkbox" [id]="fileName" [value]="fileName">
+    <label [for]="fileName">{{ fileName }}</label>
+  </li>
 </ul>
+
+<form [formGroup]="filterForm">
+  <input (change)="onChangeCorrelate($event)" id="correlate" type="checkbox" formControlName="correlate">
+  <label for="correlate"> Corréler des données </label>
+
+  <div *ngIf="filterForm.value.correlate">
+    X : <select formControlName="abscisse" (change)="onChangeSelectX($event)">
+      <option [value]="value.id" *ngFor="let value of selectXValues">{{value.label}}</option>
+    </select>
+    Y : <select formControlName="ordonnee" (change)="onChangeSelectY($event)">
+      <option [value]="value.id" *ngFor="let value of selectYValues">{{value.label}}</option>
+    </select>
+  </div>
+</form>
+
 <div class="chart-container">
     <canvas  id="MyChart" >{{ chart }}</canvas>
-</div>
+</div>  
