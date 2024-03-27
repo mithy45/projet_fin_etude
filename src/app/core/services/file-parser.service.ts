@@ -12,7 +12,7 @@ export class FileParserService {
     private fileService: FileService) { }
 
   // Récupère le fichier, le lis et applique les autres fonctions.
-  getCsvData(files: string[]): Observable<any[]> {
+  getCsvData(files: string[]): Observable<any> {
     let datas : any[] = [];
     const observer = new Observable<any[]>(observer => {
       for (let i = 0; i < files.length; i++) {
@@ -73,7 +73,7 @@ export class FileParserService {
 
   // Fusionne les données parsées pour chaque fichier.
   mergeData (datas: any, fileNames: any) {
-    console.log(datas);
+    // console.log(datas);
     let parseData : any = {
       x: [],
       y: [],
@@ -123,8 +123,8 @@ export class FileParserService {
         parseData.y[i].data.push(datas[i].y[indexList[i]]);
       }
     });
-    console.log("tutu");
-    console.log(parseData);
+    // console.log("tutu");
+    // console.log(parseData);
     return parseData;
   }
 
