@@ -20,6 +20,8 @@ export class ViewerComponent {
   filterForm: FormGroup;
   selectXValues: any = [];
   selectYValues: any = [];
+  correlationXValues: any = [];
+  correlationYValues: any = [];
   currentSelectX = "je suis current select x";
   currentSelectY = "je suis current select y";
   public correlate = false;
@@ -46,9 +48,9 @@ export class ViewerComponent {
       this.selectXValues = data.column;
       this.selectYValues = data.column;
 
-      console.log(this.selectXValues);
+      // console.log(this.selectXValues);
 
-      console.log(this.jsonData);
+      // console.log("json data", this.jsonData);
       // this.jsonData = this.fileParserService.parseCsvData(this.jsonData);
       this.createChart();
     });
@@ -86,28 +88,42 @@ export class ViewerComponent {
 
   onChangeSelectX (event: any) {
     this.currentSelectX = event.target.value;
-    let response = this.fileParserService.parseSelectLabel(this.currentSelectX);
+    let { column, fileName } = this.fileParserService.parseSelectLabel(this.currentSelectX);
+    this.fileParserService.getCsvData([fileName])
+    .subscribe(data => {
+      this.correlationXValues = [];
+      for (let i = 0; i < data.x.length; i++) {
+        this.correlationXValues.push({annee: data.x[i], data: data.y[0].data[i]});
+      }
+      this.correlationXValues.sort((a: { data: number; }, b: { data: number; }) => a.data - b.data);
+      this.correlateData();
+    })
   }
 
   onChangeSelectY (event: any) {
     this.currentSelectY = event.target.value;
-    let response = this.fileParserService.parseSelectLabel(this.currentSelectY);
-    console.log(response);
-
+    let { column, fileName } = this.fileParserService.parseSelectLabel(this.currentSelectY);
+    this.fileParserService.getCsvData([fileName])
+    .subscribe(data => {
+      this.correlationYValues = [];
+      for (let i = 0; i < data.x.length; i++) {
+        this.correlationYValues.push({annee: data.x[i], data: data.y[0].data[i]});
+      }
+      this.correlateData();
+    })
   }
 
   onChangeCorrelate (event : any) {
-    console.log("x", this.currentSelectX);
-    console.log("y", this.currentSelectY);
     // event.target.value.X;Y 
 
     // { fichier,X colonne } = service.parseSelectLabel(va.xl)
     // { fichier,Y colonne } = service.parseSelectLabel(val;y)
 
-    
-
     if (event.target.checked) {
-      // on récup les 
+      this.correlateData();
+    }
+    else {
+      this.createChart();
     }
   }
 
@@ -116,6 +132,24 @@ export class ViewerComponent {
   }
 
   correlateData () {
-    console.log("CorrelateData");
+    if (this.correlationXValues.length === 0 || this.correlationYValues.length === 0) {
+      return;
+    }
+    const correlatedDataX: any [] = [];
+    const correlatedDataY: any [] = [];
+    this.correlationXValues.forEach((d1: { annee: any; data: any; }) => {
+      const d2 = this.correlationYValues.find((item: { annee: any; }) => item.annee === d1.annee);
+      if (d2) {
+        correlatedDataX.push(d1.data);
+        correlatedDataY.push(d2.data)
+      }
+    });
+    this.chart.clear();
+    this.chart.config.type = 'scatter';
+    this.chart.data.labels = correlatedDataX;
+    this.chart.data.datasets = [{data:correlatedDataY, label: 'Correlation'}];
+    this.chart.update();
+    // console.log(correlatedDataX)
+    // console.log(correlatedDataY)
   }
 }
