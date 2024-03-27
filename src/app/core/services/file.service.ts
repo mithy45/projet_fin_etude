@@ -14,6 +14,8 @@ export class FileService {
       'indice de fécondite',
       'deces',
       'population_francaise',
+      'taux_inflation',
+      'pouvoir d achat des ménages',
       // Ajoutez d'autres noms de fichiers CSV ici
     ];
   }
