@@ -12,7 +12,7 @@ import { FileParserService } from '../../../../../core/services/file-parser.serv
 export class BirthRateGraphComponent {
   public chart: any;
   public jsonData: any;
-  birth_rate_file: string = "naissances";
+  birth_rate_file: string = "Naissances";
   important_point: number[] = [1914, 1918, 1939, 1945, 1950, 1973, 1974, 1979, 1980, 1986, 1990, 1991, 1993, 2001, 2002, 2008]
 
   constructor(private fileParserService: FileParserService) {}
