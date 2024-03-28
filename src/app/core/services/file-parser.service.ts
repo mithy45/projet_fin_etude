@@ -12,14 +12,14 @@ export class FileParserService {
     private fileService: FileService) { }
 
   // Récupère le fichier, le lis et applique les autres fonctions.
-  getCsvData(files: string[]): Observable<any> {
+  getCsvData(files: string[], color = false): Observable<any> {
     let datas : any[] = [];
     const observer = new Observable<any[]>(observer => {
       for (let i = 0; i < files.length; i++) {
         this.http.get('../../assets/bdd/' + files[i] + '.csv', {responseType: 'text'}).subscribe(data => {
           datas.push(this.parseCsvData(data));
           if (i == files.length - 1) {
-            datas = this.mergeData(datas, files);
+            datas = this.mergeData(datas, files, color);
             observer.next(datas);
           }
         });
@@ -72,19 +72,23 @@ export class FileParserService {
   }
 
   // Fusionne les données parsées pour chaque fichier.
-  mergeData (datas: any, fileNames: any) {
-    // console.log(datas);
+  mergeData (datas: any, fileNames: any, color = false) {
     let parseData : any = {
       x: [],
       y: [],
       column: [],
+      years: [],
     };
 
     for (let i = 0; i < datas.length; i++) {
       parseData.y.push({
         label: fileNames[i],
         data: [],
+        yAxisID: 'y' + i,
       });
+      if (color) {
+        parseData.y[parseData.y.length - 1].pointBackgroundColor = [];
+      }
       for (let j = 0; j < datas[i].column.length; j++) {
         // parseData.column.push(datas[i].column[j] + " (" + fileNames[i] + ")");
         let labels = this.formatSelectLabels(datas[i].column[j], fileNames[i]);
@@ -103,6 +107,7 @@ export class FileParserService {
     // }
 
     datas[0].x.forEach((item: any, index: any) => {
+      parseData.years.push(item);
       let isValid = true;
       let indexList = [index];
       for (let i = 1; i < datas.length; i++) {
@@ -121,10 +126,13 @@ export class FileParserService {
       parseData.x.push(item);
       for (let i = 0; i < datas.length; i++) {
         parseData.y[i].data.push(datas[i].y[indexList[i]]);
+        if (color) {
+          let decenie = Math.trunc((item - 1900) / 10);
+          parseData.y[i].pointBackgroundColor.push(this.generateColor(decenie, 12));
+        }
       }
     });
-    // console.log("tutu");
-    // console.log(parseData);
+    console.log(parseData);
     return parseData;
   }
 
@@ -165,5 +173,31 @@ export class FileParserService {
     response.column = tmp[0];
     response.fileName = tmp[1];
     return response;
+  }
+
+  generateColor (i: number, max: number) {
+    let red = 255;
+    let green = 0;
+    let blue = 0;
+
+    let combi = 255 * 5;
+    let step = combi / max;
+    let count = step * i;
+
+    for (let j = 0; j < count; j++) {
+      if (red == 255 && green < 255) {
+        green++;
+      } else if (green == 255 && red > 0) {
+        red--;
+      } else if (red == 0 && blue < 255) {
+        blue++;
+      } else if (blue == 255 && green > 0) {
+        green--;
+      } else {
+        red++;
+      }
+    }
+    console.log(i, "rgb("+ red +", "+ green + ", " + blue + ")");
+    return "rgb("+ red +", "+ green + ", " + blue + ")";
   }
 }

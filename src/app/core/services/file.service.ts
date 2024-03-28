@@ -7,16 +7,28 @@ import { HttpClient } from '@angular/common/http';
 export class FileService {
   constructor() { }
 
-  getFilesName(): string[] {
-    return [
-      'naissances',
-      'mortalite_infantile',
-      'indice de fécondite',
-      'deces',
-      'population_francaise',
-      'taux_inflation',
-      'pouvoir d achat des ménages',
+  getFilesName(): any {
+    return {
+      "Démographie": [
+        'Naissances',
+        'Indice de fécondite',
+        'Mortalite infantile',
+        'Décès',
+        'Population française',
+        'Taux 65 ans et plus',
+      ],
+      "Economie" : [
+        'Croissance PIB',
+        'Pouvoir d\'achat des ménages',
+        'Taux d\'inflation',
+        'Taux de smic',
+        'Taux de pauvreté',
+        'Taux de chomage'
+      ],
+      "Autre" : [
+
+      ],
       // Ajoutez d'autres noms de fichiers CSV ici
-    ];
+    };
   }
 }
