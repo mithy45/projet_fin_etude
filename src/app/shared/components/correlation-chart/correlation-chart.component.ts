@@ -13,9 +13,9 @@ export class CorrelationChartComponent {
   @ViewChild('correlationChartCanvas') chartCanvas!: ElementRef;
 
   @Input() chartType: string = 'scatter';
+  @Input() method: string = 'correlation';
   @Input() xFile!: string;
   @Input() yFile!: string;
-  @Input() id!: string;
 
   chart!: Chart;
 
@@ -40,23 +40,64 @@ export class CorrelationChartComponent {
             data: yData.y[0].data[i]
           })
         }
-        this.createCorrelateChart(correlationXValues, correlationYValues);
+        if (this.method == "correlation") {
+          this.createCorrelateChart(correlationXValues, correlationYValues);
+        }
+        else if (this.method == "division") {
+          this.createDivisionChart(correlationXValues, correlationYValues);
+        }
       });
     });
   }
 
   createCorrelateChart(correlationXValues: { annee: number; data: number; }[], correlationYValues: { annee: number; data: number; }[]) {
-    if (this.chart) {
-      this.chart.destroy();
-    }
-    const correlatedData: number[] = [];
+    const correlatedData: {x: number, y: number, annee: number}[] = [];
     correlationXValues.forEach((d1) => {
       const d2 = correlationYValues.find((item) => item.annee === d1.annee);
       if (d2) {
-        correlatedData.push(d1.data / d2.data);
+        correlatedData.push({
+          x: d1.data,
+          y: d2.data,
+          annee: d1.annee});
       }
     });
-    this.chart = new Chart(this.id, {
+    const callbacks = {
+      label: (context: any) => {
+        let x = context.parsed.x;
+        let y = context.parsed.y;
+
+        const match = correlatedData.find((item) => item.x == x && item.y == y);
+        return match!.annee + " (" + x + " ; " + y + ")";
+      }
+    }
+    const scaleOptions = {
+      x: {
+        type: 'linear',
+      },
+    };
+    this.createChart(correlatedData, callbacks, scaleOptions);
+  }
+
+  createDivisionChart(correlationXValues: { annee: number; data: number; }[], correlationYValues: { annee: number; data: number; }[]) {
+    const correlatedData: {x: number, y: number}[] = [];
+    correlationXValues.forEach((d1) => {
+      const d2 = correlationYValues.find((item) => item.annee === d1.annee);
+      if (d2) {
+        correlatedData.push({
+          x: d1.annee,
+          y: d1.data / d2.data
+        });
+      }
+    });
+    this.createChart(correlatedData, undefined, undefined);
+  }
+
+  createChart(correlatedData: any, callbacks: any, scaleOptions: any) {
+    if (this.chart) {
+      this.chart.destroy();
+    }
+    const ctx = this.chartCanvas.nativeElement.getContext('2d');
+    this.chart = new Chart(ctx, {
       type: this.chartType as keyof ChartTypeRegistry,
       data: {
         labels: [],
@@ -65,17 +106,10 @@ export class CorrelationChartComponent {
       options: {
         responsive: true,
         aspectRatio: 2.5,
+        scales: scaleOptions,
         plugins: {
           tooltip: {
-            // callbacks: {
-            //   label: (context: any) => {
-            //     let x = context.parsed.x;
-            //     let y = context.parsed.y;
-
-            //     const match = correlatedData.find((item) => item.x == x && item.y == y);
-            //     return match!.year + " (" + x + " ; " + y + ")";
-            //   }
-            // }
+            callbacks: callbacks
           },
           legend: {
             onClick: (e) => e.native?.stopPropagation()
@@ -83,5 +117,6 @@ export class CorrelationChartComponent {
         }
       }
     });
+    console.log(this.chart)
   }
 }

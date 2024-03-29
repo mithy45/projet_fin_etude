@@ -132,7 +132,7 @@ export class FileParserService {
         }
       }
     });
-    console.log(parseData);
+    // console.log(parseData);
     return parseData;
   }
 
