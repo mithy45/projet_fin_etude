@@ -17,7 +17,7 @@ export class ViewerComponent {
   public chart: any;
   public jsonData: any;
   fileNamesCheckBox: any;
-  public checkboxNameSelected : string[] = ["Naissances"];
+  public checkboxNameSelected : string[] = [];
   filterForm: FormGroup;
   selectXValues: any = [];
   selectYValues: any = [];
