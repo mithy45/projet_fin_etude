@@ -26,7 +26,7 @@ export class FileService {
         'Taux de chomage'
       ],
       "Autre" : [
-
+        "Nombre d'ivg",
       ],
       // Ajoutez d'autres noms de fichiers CSV ici
     };
