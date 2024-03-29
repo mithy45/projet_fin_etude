@@ -34,4 +34,11 @@
 
 <div class="chart-container">
     <canvas  id="MyChart" >{{ chart }}</canvas>
-</div>  
+</div>
+
+<div id="chart-correlation-container">
+  <app-correlation-chart [xFile]="'naissances'" [yFile]="'mortalite_infantile'"> </app-correlation-chart>
+  <app-correlation-chart [xFile]="'naissances'" [yFile]="'indice de fécondite'"> </app-correlation-chart>
+  <app-correlation-chart [xFile]="'naissances'" [yFile]="'population_francaise'"> </app-correlation-chart>
+  <app-correlation-chart [xFile]="'naissances'" [yFile]="'deces'"> </app-correlation-chart>
+</div>
