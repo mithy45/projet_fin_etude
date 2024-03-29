@@ -18,27 +18,30 @@ export class CorrelationChartComponent {
   @Input() yFile!: string;
 
   chart!: Chart;
+  colorPoints: any = [];
 
   constructor(private fileParserService: FileParserService) {}
 
   ngOnInit(): void {
-    this.fileParserService.getCsvData([this.xFile])
+    this.fileParserService.getCsvData([this.xFile], true)
     .subscribe(xData => {
-      const correlationXValues: {annee: number, data: number}[] = [];
+      const correlationXValues: {year: number, data: number}[] = [];
       for (let i = 0; i < xData.x.length; i++) {
         correlationXValues.push({
-          annee: xData.x[i],
+          year: xData.x[i],
           data: xData.y[0].data[i]
-        })
+        });
+        this.colorPoints[xData.x[i]] = xData.y[0].pointBackgroundColor[i];
       }
-      this.fileParserService.getCsvData([this.yFile])
+      this.fileParserService.getCsvData([this.yFile], true)
       .subscribe(yData => {
-        const correlationYValues: {annee: number, data: number}[] = [];
+        const correlationYValues: {year: number, data: number}[] = [];
         for (let i = 0; i < yData.x.length; i++) {
           correlationYValues.push({
-            annee: yData.x[i],
+            year: yData.x[i],
             data: yData.y[0].data[i]
-          })
+          });
+          this.colorPoints[yData.x[i]] = yData.y[0].pointBackgroundColor[i];
         }
         if (this.method == "correlation") {
           this.createCorrelateChart(correlationXValues, correlationYValues);
@@ -50,49 +53,53 @@ export class CorrelationChartComponent {
     });
   }
 
-  createCorrelateChart(correlationXValues: { annee: number; data: number; }[], correlationYValues: { annee: number; data: number; }[]) {
-    const correlatedData: {x: number, y: number, annee: number}[] = [];
+  createCorrelateChart(correlationXValues: { year: number; data: number; }[], correlationYValues: { year: number; data: number; }[]) {
+    const colors: any = [];
+    const correlatedData: {x: number, y: number, year: number}[] = [];
     correlationXValues.forEach((d1) => {
-      const d2 = correlationYValues.find((item) => item.annee === d1.annee);
+      const d2 = correlationYValues.find((item) => item.year === d1.year);
       if (d2) {
         correlatedData.push({
           x: d1.data,
           y: d2.data,
-          annee: d1.annee});
+          year: d1.year});
+          colors.push(this.colorPoints[d1.year]);
       }
     });
+    const datasets = [{data: correlatedData, label: 'Correlation', backgroundColor: colors}];
     const callbacks = {
       label: (context: any) => {
         let x = context.parsed.x;
         let y = context.parsed.y;
 
         const match = correlatedData.find((item) => item.x == x && item.y == y);
-        return match!.annee + " (" + x + " ; " + y + ")";
+        return match!.year + " (" + x + " ; " + y + ")";
       }
-    }
+    };
     const scaleOptions = {
       x: {
         type: 'linear',
       },
     };
-    this.createChart(correlatedData, callbacks, scaleOptions);
+    this.createChart(datasets, callbacks, scaleOptions);
   }
 
-  createDivisionChart(correlationXValues: { annee: number; data: number; }[], correlationYValues: { annee: number; data: number; }[]) {
+  createDivisionChart(correlationXValues: { year: number; data: number; }[], correlationYValues: { year: number; data: number; }[]) {
     const correlatedData: {x: number, y: number}[] = [];
     correlationXValues.forEach((d1) => {
-      const d2 = correlationYValues.find((item) => item.annee === d1.annee);
+      const d2 = correlationYValues.find((item) => item.year === d1.year);
       if (d2) {
         correlatedData.push({
-          x: d1.annee,
+          x: d1.year,
           y: d1.data / d2.data
         });
       }
     });
-    this.createChart(correlatedData, undefined, undefined);
+    const datasets = [{data: correlatedData, label: 'Division'}];
+    this.createChart(datasets, undefined, undefined);
   }
 
-  createChart(correlatedData: any, callbacks: any, scaleOptions: any) {
+  createChart(datasets: any, callbacks: any, scaleOptions: any) {
     if (this.chart) {
       this.chart.destroy();
     }
@@ -101,7 +108,7 @@ export class CorrelationChartComponent {
       type: this.chartType as keyof ChartTypeRegistry,
       data: {
         labels: [],
-        datasets: [{data: correlatedData, label: 'Correlation'}]
+        datasets: datasets
       },
       options: {
         responsive: true,
