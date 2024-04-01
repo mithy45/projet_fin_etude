@@ -5,11 +5,12 @@ import { FileService } from '../../../../core/services/file.service';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CorrelationChartComponent } from '../../../../shared/components/correlation-chart/correlation-chart.component';
+import { ChartComponent } from '../../../../shared/components/chart/chart.component';
 
 @Component({
   selector: 'app-viewer',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, CorrelationChartComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, CorrelationChartComponent, ChartComponent],
   templateUrl: './viewer.component.html',
   styleUrl: './viewer.component.scss'
 })  
@@ -27,7 +28,8 @@ export class ViewerComponent {
   currentSelectX = "je suis current select x";
   currentSelectY = "je suis current select y";
   public colorPoints: any = [];
-  public correlate = false;
+
+  selectedOption: string = 'display';
 
   constructor(private fileParserService: FileParserService,
     private fileService: FileService,
@@ -36,6 +38,7 @@ export class ViewerComponent {
         abscisse: [],
         ordonnee: [],
         correlate: false,
+        radioData: ['display']
       });
     }
 
@@ -45,7 +48,7 @@ export class ViewerComponent {
   }
 
   init () {
-    this.fileParserService.getCsvData(this.checkboxNameSelected, this.filterForm.value.correlate) //nb_naissance_1900_2019
+    this.fileParserService.getCsvData(this.checkboxNameSelected, ['correlate', 'division'].includes(this.filterForm.value.radioData)) //nb_naissance_1900_2019
     .subscribe((data:any) => {
       this.jsonData = data;
       this.selectXValues = data.column;
@@ -57,6 +60,9 @@ export class ViewerComponent {
   }
 
   onChange(event:any) {
+    if (this.filterForm.value.radioData !== 'display') {
+      return;
+    }
     let fileName = event.target.id;
     let isChecked = event.target.checked;
 
@@ -66,6 +72,16 @@ export class ViewerComponent {
       this.checkboxNameSelected.push(fileName);
     }
     this.init();
+  }
+
+  onChangeRadioData(event: any) {
+    if (event.target.value === "display") {
+      this.init()
+    } else if (event.target.value === "correlate") {
+      this.correlateData();
+    } else if (event.target.value === "division") {
+      this.divisionData();
+    }
   }
 
   createChart(chart = null) {
@@ -89,7 +105,7 @@ export class ViewerComponent {
       };
     }
 
-    if (this.filterForm.value.correlate) {
+    if (['correlate', 'division'].includes(this.filterForm.value.radioData)) {
       params.options.scales = {
         x: {
           type: 'linear',
@@ -102,48 +118,41 @@ export class ViewerComponent {
   onChangeSelectX (event: any) {
     this.currentSelectX = event.target.value;
     let { column, fileName } = this.fileParserService.parseSelectLabel(this.currentSelectX);
-    this.fileParserService.getCsvData([fileName], this.filterForm.value.correlate)
+    this.fileParserService.getCsvData([fileName], true)
     .subscribe(data => {
       this.correlationXValues = [];
       for (let i = 0; i < data.x.length; i++) {
         this.correlationXValues.push({annee: data.x[i], data: data.y[0].data[i]});
         this.colorPoints[data.x[i]] = data.y[0].pointBackgroundColor[i];
       }
-      // this.correlationXValues.sort((a: { data: number; }, b: { data: number; }) => a.data - b.data);
-      this.correlateData();
+      if (this.filterForm.value.radioData === 'correlate') {
+        this.correlateData();
+      } else if (this.filterForm.value.radioData === 'division') {
+        this.divisionData();
+      }
     })
   }
 
   onChangeSelectY (event: any) {
     this.currentSelectY = event.target.value;
     let { column, fileName } = this.fileParserService.parseSelectLabel(this.currentSelectY);
-    this.fileParserService.getCsvData([fileName], this.filterForm.value.correlate)
+    this.fileParserService.getCsvData([fileName], true)
     .subscribe(data => {
       this.correlationYValues = [];
       for (let i = 0; i < data.x.length; i++) {
         this.correlationYValues.push({annee: data.x[i], data: data.y[0].data[i]});
         this.colorPoints[data.x[i]] = data.y[0].pointBackgroundColor[i];
       }
-      this.correlateData();
+      if (this.filterForm.value.radioData === 'correlate') {
+        this.correlateData();
+      } else if (this.filterForm.value.radioData === 'division') {
+        this.divisionData();
+      }
     })
   }
 
-  onChangeCorrelate (event : any) {
-    // event.target.value.X;Y 
-
-    // { fichier,X colonne } = service.parseSelectLabel(va.xl)
-    // { fichier,Y colonne } = service.parseSelectLabel(val;y)
-
-    if (event.target.checked) {
-      this.correlateData();
-    }
-    else {
-      this.createChart();
-    }
-  }
-
   onSelect () {
-    console.log(this.filterForm.value.abscisse, this.filterForm.value.ordonnee );
+    // console.log(this.filterForm.value.abscisse, this.filterForm.value.ordonnee );
   }
 
   correlateData () {
@@ -198,6 +207,41 @@ export class ViewerComponent {
     }
     
     this.chart.update();
-    // this.createChart(this.chart);
+  }
+
+  divisionData() {
+    if (this.correlationXValues.length === 0 || this.correlationYValues.length === 0) {
+      return;
+    }
+    const correlatedData: {x: number, y: number}[] = [];
+    this.correlationXValues.forEach((d1: any) => {
+      const d2 = this.correlationYValues.find((item: any) => item.annee === d1.annee);
+      if (d2) {
+        correlatedData.push({
+          x: d1.annee,
+          y: d1.data / d2.data
+        });
+      }
+    });
+    this.chart.clear();
+    this.chart.config.type = 'scatter';
+    this.chart.data.labels = [];
+    this.chart.data.datasets = [{data: correlatedData, label: 'Division'}];
+    this.chart.options.plugins = {
+      tooltip: {
+          callbacks: {
+              label: (context: any) => {
+                  let x = context.parsed.x;
+                  let y = context.parsed.y;
+                  return "(" + x + " ; " + y + ")";
+              }
+          }
+      }
+    }
+    this.chart.options.scales = {};
+    this.chart.options.scales.x = {
+      type: 'linear',
+    }
+    this.chart.update();
   }
 }

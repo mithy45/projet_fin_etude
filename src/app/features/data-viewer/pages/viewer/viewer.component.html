@@ -17,12 +17,24 @@
 
   <div class="horizontal-container">
     <div class="component">
-      <input (change)="onChangeCorrelate($event)" id="correlate" type="checkbox" formControlName="correlate">
-      <label for="correlate"> Corréler des données </label>
+      <label>
+        <input (change)="onChangeRadioData($event)" type="radio" formControlName="radioData" value="display" checked/>
+        Afficher les données
+      </label>
+
+      <label>
+        <input (change)="onChangeRadioData($event)" type="radio" formControlName="radioData" value="correlate"/>
+        Correlation X Y
+      </label>
+
+      <label>
+        <input (change)="onChangeRadioData($event)" type="radio" formControlName="radioData" value="division"/>
+        Division X Y
+      </label>
     </div>
   </div>
 
-  <div *ngIf="filterForm.value.correlate">
+  <div *ngIf="['correlate', 'division'].includes(filterForm.value.radioData)">
     X : <select formControlName="abscisse" (change)="onChangeSelectX($event)">
       <option [value]="value.id" *ngFor="let value of selectXValues">{{value.label}}</option>
     </select>
@@ -36,7 +48,12 @@
     <canvas  id="MyChart" >{{ chart }}</canvas>
 </div>
 
-<!-- <div id="chart-correlation-container">
-  <app-correlation-chart [xFile]="'Mortalite infantile'" [yFile]="'Naissances'" [method]="'division'"> </app-correlation-chart>
-  <app-correlation-chart [xFile]="'Mortalite infantile'" [yFile]="'Naissances'" [method]="'correlation'"> </app-correlation-chart>
-</div> -->
+<div id="chart-correlation-container">
+    <app-correlation-chart [xFile]="'Mortalite infantile'" [yFile]="'Naissances'" [method]="'division'"> </app-correlation-chart>
+    <app-correlation-chart [xFile]="'Mortalite infantile'" [yFile]="'Naissances'" [method]="'correlation'"> </app-correlation-chart>
+    <app-correlation-chart [xFile]="'Indice de fécondite'" [yFile]="'Naissances'" [method]="'division'"> </app-correlation-chart>
+    <app-correlation-chart [xFile]="'Indice de fécondite'" [yFile]="'Naissances'" [method]="'correlation'"> </app-correlation-chart>
+    <app-chart [fileList]="['Fécondité des femmes selon le niveau de vie']"></app-chart>
+    <app-chart [fileList]="['Âge moyen de la mère à l\'accouchement - France métropolitaine']"></app-chart>
+    <!-- <app-chart [fileList]="['Évolution de la dépense des ménages', 'Pouvoir d\'achat des ménages']"></app-chart> -->
+</div>

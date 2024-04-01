@@ -197,7 +197,7 @@ export class FileParserService {
         red++;
       }
     }
-    console.log(i, "rgb("+ red +", "+ green + ", " + blue + ")");
+    // console.log(i, "rgb("+ red +", "+ green + ", " + blue + ")");
     return "rgb("+ red +", "+ green + ", " + blue + ")";
   }
 }

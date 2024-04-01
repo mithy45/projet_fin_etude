@@ -20,6 +20,12 @@ h3 {
 }
 
 
-.chart-correlation-container {
-    display: inline-grid;
+#chart-correlation-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 10px;
+}
+
+#chart-correlation-container > * {
+    border: 1px solid #000;
 }
