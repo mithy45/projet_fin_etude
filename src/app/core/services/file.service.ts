@@ -13,7 +13,7 @@ export class FileService {
         'Naissances',
         'Indice de fécondite',
         'Mortalite infantile',
-        'Âge moyen de la mère à l\'accouchement - France métropolitaine',
+        'Âge moyen de la mère à l\'accouchement',
         'Décès',
         'Population française',
         'Taux 65 ans et plus',

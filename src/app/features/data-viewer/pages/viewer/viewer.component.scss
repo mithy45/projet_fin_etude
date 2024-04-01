@@ -29,3 +29,29 @@ h3 {
 #chart-correlation-container > * {
     border: 1px solid #000;
 }
+
+.padding-left {
+    padding-left: 1rem;
+}  
+
+select {
+    max-width: 200px;
+}
+
+mat-slider {
+    width: 300px;
+}
+
+.zoom {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    button {
+        margin-right: 2rem;
+    }
+}
+
+.chart-container {
+    margin-bottom: 3rem;
+}

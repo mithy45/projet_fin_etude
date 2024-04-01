@@ -127,7 +127,7 @@ export class FileParserService {
       for (let i = 0; i < datas.length; i++) {
         parseData.y[i].data.push(datas[i].y[indexList[i]]);
         if (color) {
-          let decenie = Math.trunc((item - 1900) / 10);
+          let decenie = this.getDecenie(item);
           parseData.y[i].pointBackgroundColor.push(this.generateColor(decenie, 12));
         }
       }
@@ -175,10 +175,23 @@ export class FileParserService {
     return response;
   }
 
-  generateColor (i: number, max: number) {
+  getDecenie (year: number) {
+    return Math.trunc((year - 1900) / 10);
+  }
+
+  generateColor (i: number, max = 12) {
     let red = 255;
     let green = 0;
     let blue = 0;
+
+    // Hardcode.
+    if (i == 5) {
+      return "rgb(7, 199, 0)";
+    }
+    if (i == 6) {
+      return "rgb(0, 125, 46)";
+
+    }
 
     let combi = 255 * 5;
     let step = combi / max;
