@@ -6,11 +6,14 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CorrelationChartComponent } from '../../../../shared/components/correlation-chart/correlation-chart.component';
 import { ChartComponent } from '../../../../shared/components/chart/chart.component';
+import {MatSliderModule} from '@angular/material/slider';
+import zoomPlugin from 'chartjs-plugin-zoom'
+import {MatButtonModule} from '@angular/material/button';
 
 @Component({
   selector: 'app-viewer',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, CorrelationChartComponent, ChartComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, CorrelationChartComponent, ChartComponent, MatSliderModule, MatButtonModule],
   templateUrl: './viewer.component.html',
   styleUrl: './viewer.component.scss'
 })  
@@ -19,7 +22,7 @@ export class ViewerComponent {
   public chart: any;
   public jsonData: any;
   fileNamesCheckBox: any;
-  public checkboxNameSelected : string[] = [];
+  public checkboxNameSelected : string[] = ["Naissances"];
   filterForm: FormGroup;
   selectXValues: any = [];
   selectYValues: any = [];
@@ -28,6 +31,7 @@ export class ViewerComponent {
   currentSelectX = "je suis current select x";
   currentSelectY = "je suis current select y";
   public colorPoints: any = [];
+  public sliderParams : any = {};
 
   selectedOption: string = 'display';
 
@@ -43,8 +47,10 @@ export class ViewerComponent {
     }
 
   ngOnInit() {
+    Chart.register(zoomPlugin);
     this.fileNamesCheckBox = this.fileService.getFilesName();
     this.init();
+
   }
 
   init () {
@@ -54,23 +60,26 @@ export class ViewerComponent {
       this.selectXValues = data.column;
       this.selectYValues = data.column;
 
+      if (this.filterForm.value.radioData !== 'display') {
+        return;
+      }
       // this.jsonData = this.fileParserService.parseCsvData(this.jsonData);
       this.createChart();
     });
   }
 
   onChange(event:any) {
-    if (this.filterForm.value.radioData !== 'display') {
-      return;
-    }
     let fileName = event.target.id;
     let isChecked = event.target.checked;
+
+
 
     if (!isChecked && this.checkboxNameSelected.includes(fileName)) {
       this.checkboxNameSelected.splice(this.checkboxNameSelected.indexOf(fileName), 1);
     } else if (isChecked && !this.checkboxNameSelected.includes(fileName)) {
       this.checkboxNameSelected.push(fileName);
-    }
+    }    
+
     this.init();
   }
 
@@ -82,6 +91,7 @@ export class ViewerComponent {
     } else if (event.target.value === "division") {
       this.divisionData();
     }
+    this.setSliders();
   }
 
   createChart(chart = null) {
@@ -101,6 +111,19 @@ export class ViewerComponent {
         },
         options: {
           aspectRatio: 2,
+          plugins: {
+            zoom: {
+              zoom: {
+                mode: 'xy', 
+                drag: {
+                  enabled: true,
+                  borderColor: 'rgb(54, 162, 235)',
+                  borderWidth: 1,
+                  backgroundColor: 'rgba(54, 162, 235, 0.3)'
+                },
+              },
+            },
+          },
         }
       };
     }
@@ -113,6 +136,12 @@ export class ViewerComponent {
       };
     }
     this.chart = new Chart("MyChart", params);
+    this.setSliders();
+  }
+
+  updateChart () {
+    this.chart.update();
+    this.setSliders();
   }
 
   onChangeSelectX (event: any) {
@@ -159,22 +188,33 @@ export class ViewerComponent {
     if (this.correlationXValues.length === 0 || this.correlationYValues.length === 0) {
       return;
     }
-    let points: any = [];
+    let points: any[] = [];
     const correlatedDataX: any [] = [];
     const correlatedDataY: any [] = [];
-    let colors: any = [];
-    let borderColors: any = [];
+    
     this.correlationXValues.forEach((d1: { annee: any; data: any; }) => {
       const d2 = this.correlationYValues.find((item: { annee: any; }) => item.annee === d1.annee);
       if (d2) {
-        points.push({
+        let decenie = this.fileParserService.getDecenie(d1.annee);
+        let decenieIndex = points.findIndex((elt) => elt.decenie == decenie);
+
+        if (decenieIndex == -1) {
+          points.push({
+            decenie: decenie,
+            data : [],
+            label : d1.annee - (d1.annee % 10),
+            backgroundColor: this.fileParserService.generateColor(decenie),
+          });
+          decenieIndex = points.length - 1;
+        }
+
+        points[decenieIndex].data.push({
           x: d1.data,
           y: d2.data,
           year: d1.annee,
         });
         correlatedDataX.push(d1.data);
         correlatedDataY.push(d2.data);
-        colors.push(this.colorPoints[d1.annee]);
         // if (Math.trunc(d1.annee / 10) % 2 == 0) {
         //   borderColors.push("#000");
         // } else {
@@ -185,20 +225,24 @@ export class ViewerComponent {
     this.chart.clear();
     this.chart.config.type = 'scatter';
     this.chart.data.labels = [];
-    this.chart.data.datasets = [{data: points, label: 'Correlation', backgroundColor: colors}];
+    this.chart.data.datasets = points;
 
-    this.chart.options.plugins = {
-      tooltip: {
-          callbacks: {
-              label: (context: any) => {
-                  let x = context.parsed.x;
-                  let y = context.parsed.y;
+    this.chart.options.plugins.tooltip = {
+        callbacks: {
+            label: (context: any) => {
+                let x = context.parsed.x;
+                let y = context.parsed.y;
 
-                  const match = points.find((item: any) => item.x == x && item.y == y );
-                  return match.year + " (" + x + " ; " + y + ")";
-              }
-          }
-      }
+                for(let i = 0; i < points.length; i++) {
+                  let decenie = points[i];
+                  const match = decenie.data.find((item: any) => item.x == x && item.y == y);
+                  if (match) {
+                    return match.year + " (" + x + " ; " + y + ")";
+                  }
+                };
+                return "";
+            }
+        }
     }
 
     this.chart.options.scales = {};
@@ -206,7 +250,8 @@ export class ViewerComponent {
       type: 'linear',
     }
     
-    this.chart.update();
+    this.updateChart();
+
   }
 
   divisionData() {
@@ -227,21 +272,51 @@ export class ViewerComponent {
     this.chart.config.type = 'scatter';
     this.chart.data.labels = [];
     this.chart.data.datasets = [{data: correlatedData, label: 'Division'}];
-    this.chart.options.plugins = {
-      tooltip: {
-          callbacks: {
-              label: (context: any) => {
-                  let x = context.parsed.x;
-                  let y = context.parsed.y;
-                  return "(" + x + " ; " + y + ")";
-              }
-          }
-      }
+    this.chart.options.plugins.tooltip = {
+        callbacks: {
+            label: (context: any) => {
+                let x = context.parsed.x;
+                let y = context.parsed.y;
+                return "(" + x + " ; " + y + ")";
+            }
+        }
     }
     this.chart.options.scales = {};
     this.chart.options.scales.x = {
       type: 'linear',
     }
+    this.updateChart();
+  }
+  
+  /*** Sliders */
+  formatLabel = (value: number) => {
+    if (!this.chart) {
+      return "";
+    }
+    if (this.chart.config.type == "line") {
+      return this.chart.data.labels[value];
+    }
+    return `${value}`;
+  }
+
+  setSliders () {
+    this.sliderParams.min = this.chart.scales.x.min;
+    this.sliderParams.max = this.chart.scales.x.max - 1;
+    this.sliderParams.currentMin = this.sliderParams.min;
+    this.sliderParams.currentMax = this.sliderParams.max;
+  }
+
+  resetZoom () {
+    this.chart.resetZoom();
+    this.chart.update();
+    this.setSliders();
+  }
+
+  zoom(event: any) {
+    this.chart.zoomScale('x', {min: this.sliderParams.currentMin, max: this.sliderParams.currentMax}, 'default');
+
     this.chart.update();
   }
+
+  /*** End Sliders */
 }

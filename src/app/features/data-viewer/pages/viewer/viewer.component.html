@@ -7,7 +7,7 @@
       <h3> {{ categorie }} </h3>
       <ul>
         <li *ngFor="let fileName of fileNamesCheckBox[categorie]">
-          <input (change)="onChange($event)" type="checkbox" [id]="fileName" [value]="fileName">
+          <input (change)="onChange($event)" type="checkbox" [id]="fileName" [value]="fileName" [checked]="checkboxNameSelected.includes(fileName)">
           <label [for]="fileName">{{ fileName }}</label>
         </li>
       </ul>
@@ -19,22 +19,23 @@
     <div class="component">
       <label>
         <input (change)="onChangeRadioData($event)" type="radio" formControlName="radioData" value="display" checked/>
-        Afficher les données
+        Courbes
       </label>
 
-      <label>
+      <label class="padding-left">
         <input (change)="onChangeRadioData($event)" type="radio" formControlName="radioData" value="correlate"/>
-        Correlation X Y
+        Diagramme de dispersion
       </label>
 
-      <label>
+      <label class="padding-left">
         <input (change)="onChangeRadioData($event)" type="radio" formControlName="radioData" value="division"/>
-        Division X Y
+        Correlation par Division
       </label>
     </div>
   </div>
 
   <div *ngIf="['correlate', 'division'].includes(filterForm.value.radioData)">
+    <p> Variable par axe : </p>
     X : <select formControlName="abscisse" (change)="onChangeSelectX($event)">
       <option [value]="value.id" *ngFor="let value of selectXValues">{{value.label}}</option>
     </select>
@@ -46,14 +47,23 @@
 
 <div class="chart-container">
     <canvas  id="MyChart" >{{ chart }}</canvas>
+
+    <div class="zoom">
+      <button mat-stroked-button (click)="resetZoom()">Dézoomer</button>
+      X : <mat-slider [min]="sliderParams.min" [max]="sliderParams.max" discrete [displayWith]="formatLabel" (change)="zoom($event)">
+        <input [(value)]="sliderParams.currentMin" matSliderStartThumb>
+        <input [(value)]="sliderParams.currentMax" matSliderEndThumb>
+      </mat-slider>
+    </div>
 </div>
 
 <div id="chart-correlation-container">
-    <app-correlation-chart [xFile]="'Mortalite infantile'" [yFile]="'Naissances'" [method]="'division'"> </app-correlation-chart>
-    <app-correlation-chart [xFile]="'Mortalite infantile'" [yFile]="'Naissances'" [method]="'correlation'"> </app-correlation-chart>
-    <app-correlation-chart [xFile]="'Indice de fécondite'" [yFile]="'Naissances'" [method]="'division'"> </app-correlation-chart>
-    <app-correlation-chart [xFile]="'Indice de fécondite'" [yFile]="'Naissances'" [method]="'correlation'"> </app-correlation-chart>
+    <!-- <app-correlation-chart [xFile]="'Mortalite infantile'" [yFile]="'Naissances'" [method]="'division'"> </app-correlation-chart> -->
+    <!-- <app-correlation-chart [xFile]="'Mortalite infantile'" [yFile]="'Naissances'" [method]="'correlation'"> </app-correlation-chart> -->
     <app-chart [fileList]="['Fécondité des femmes selon le niveau de vie']"></app-chart>
-    <app-chart [fileList]="['Âge moyen de la mère à l\'accouchement - France métropolitaine']"></app-chart>
+    <app-chart [fileList]="['Âge moyen de la mère à l\'accouchement']"></app-chart>
+    <app-correlation-chart [xFile]="'Mortalite infantile'" [yFile]="'Naissances'" [method]="'correlation'"> </app-correlation-chart>
+    <app-correlation-chart [xFile]="'Croissance PIB'" [yFile]="'Naissances'" [method]="'correlation'"> </app-correlation-chart>
+    
     <!-- <app-chart [fileList]="['Évolution de la dépense des ménages', 'Pouvoir d\'achat des ménages']"></app-chart> -->
 </div>
