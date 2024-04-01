@@ -5,11 +5,12 @@ import { FileService } from '../../../../core/services/file.service';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CorrelationChartComponent } from '../../../../shared/components/correlation-chart/correlation-chart.component';
+import { ChartComponent } from '../../../../shared/components/chart/chart.component';
 
 @Component({
   selector: 'app-viewer',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, CorrelationChartComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, CorrelationChartComponent, ChartComponent],
   templateUrl: './viewer.component.html',
   styleUrl: './viewer.component.scss'
 })  

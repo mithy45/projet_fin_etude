@@ -36,7 +36,12 @@
     <canvas  id="MyChart" >{{ chart }}</canvas>
 </div>
 
-<!-- <div id="chart-correlation-container">
-  <app-correlation-chart [xFile]="'Mortalite infantile'" [yFile]="'Naissances'" [method]="'division'"> </app-correlation-chart>
-  <app-correlation-chart [xFile]="'Mortalite infantile'" [yFile]="'Naissances'" [method]="'correlation'"> </app-correlation-chart>
-</div> -->
+<div id="chart-correlation-container">
+    <app-correlation-chart [xFile]="'Mortalite infantile'" [yFile]="'Naissances'" [method]="'division'"> </app-correlation-chart>
+    <app-correlation-chart [xFile]="'Mortalite infantile'" [yFile]="'Naissances'" [method]="'correlation'"> </app-correlation-chart>
+    <app-correlation-chart [xFile]="'Indice de fécondite'" [yFile]="'Naissances'" [method]="'division'"> </app-correlation-chart>
+    <app-correlation-chart [xFile]="'Indice de fécondite'" [yFile]="'Naissances'" [method]="'correlation'"> </app-correlation-chart>
+    <app-chart [fileList]="['Fécondité des femmes selon le niveau de vie']"></app-chart>
+    <app-chart [fileList]="['Âge moyen de la mère à l\'accouchement - France métropolitaine']"></app-chart>
+    <!-- <app-chart [fileList]="['Évolution de la dépense des ménages', 'Pouvoir d\'achat des ménages']"></app-chart> -->
+</div>

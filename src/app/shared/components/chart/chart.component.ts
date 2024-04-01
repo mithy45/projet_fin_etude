@@ -30,6 +30,38 @@ export class ChartComponent {
     if (this.chart) {
       this.chart.destroy();
     }
+    const scaleOptions: any = {};
+    if (this.fileList.length == 1) {
+      scaleOptions.x = {
+        type: 'linear',
+        title: {
+          display: true,
+          text: data.column.length > 1 ? data.column[0].id.split('_-_')[0] : "Année"
+        }
+      }
+      scaleOptions.y0 = {
+        title: {
+          display: true,
+          text: data.column.length > 1 ? data.column[1].id.split('_-_')[0] : data.column[0].id.split('_-_')[0]
+        }
+      }
+    } else {
+      scaleOptions.x = {
+        type: 'linear',
+        title: {
+          display: true,
+          text: "Année"
+        }
+      }
+      for (let i = 0; i < data.y.length; i++) {
+        scaleOptions["y" + i] = {
+          title: {
+            display: true,
+            text: data.column[i].id.split('_-_')[0]
+          }
+        }
+      }
+    }
     const ctx = this.chartCanvas.nativeElement.getContext('2d');
     this.chart = new Chart(ctx, {
       type: this.chartType as keyof ChartTypeRegistry,
@@ -40,7 +72,12 @@ export class ChartComponent {
       options: {
         responsive: true,
         aspectRatio: 2.5,
+        scales: scaleOptions,
         plugins: {
+          title: {
+            display: true,
+            text: this.fileList.join(', ')
+          },
           legend: {
             onClick: (e) => e.native?.stopPropagation()
           }

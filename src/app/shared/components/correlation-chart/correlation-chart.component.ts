@@ -66,7 +66,7 @@ export class CorrelationChartComponent {
           colors.push(this.colorPoints[d1.year]);
       }
     });
-    const datasets = [{data: correlatedData, label: 'Correlation', backgroundColor: colors}];
+    const datasets = [{data: correlatedData, label: 'Correlation', backgroundColor: colors, yAxisID: 'y'}];
     const callbacks = {
       label: (context: any) => {
         let x = context.parsed.x;
@@ -79,7 +79,17 @@ export class CorrelationChartComponent {
     const scaleOptions = {
       x: {
         type: 'linear',
+        title: {
+          display: true,
+          text: this.xFile
+        }
       },
+      y: {
+        title: {
+          display: true,
+          text: this.yFile,
+        }
+      }
     };
     this.createChart(datasets, callbacks, scaleOptions);
   }
@@ -96,10 +106,24 @@ export class CorrelationChartComponent {
       }
     });
     const datasets = [{data: correlatedData, label: 'Division'}];
-    this.createChart(datasets, undefined, undefined);
+    const scaleOptions = {
+      x: {
+        title: {
+          display: true,
+          text: 'Année'
+        }
+      },
+      y: {
+        title: {
+          display: true,
+          text: 'Résultat correlation',
+        }
+      }
+    };
+    this.createChart(datasets, undefined, scaleOptions);
   }
 
-  createChart(datasets: any, callbacks: any, scaleOptions: any) {
+  createChart(datasets: any, callbacks: any, scaleOptions: any = {}) {
     if (this.chart) {
       this.chart.destroy();
     }
@@ -115,6 +139,10 @@ export class CorrelationChartComponent {
         aspectRatio: 2.5,
         scales: scaleOptions,
         plugins: {
+          title: {
+            display: true,
+            text: this.xFile + ' / ' + this.yFile
+          },
           tooltip: {
             callbacks: callbacks
           },
@@ -124,6 +152,5 @@ export class CorrelationChartComponent {
         }
       }
     });
-    console.log(this.chart)
   }
 }

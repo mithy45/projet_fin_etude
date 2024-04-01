@@ -12,7 +12,9 @@ export class FileService {
       "Démographie": [
         'Naissances',
         'Indice de fécondite',
+        'Fécondité des femmes selon le niveau de vie',
         'Mortalite infantile',
+        'Âge moyen de la mère à l\'accouchement - France métropolitaine',
         'Décès',
         'Population française',
         'Taux 65 ans et plus',
@@ -20,6 +22,7 @@ export class FileService {
       "Economie" : [
         'Croissance PIB',
         'Pouvoir d\'achat des ménages',
+        'Évolution de la dépense des ménages',
         'Taux d\'inflation',
         'Taux de smic',
         'Taux de pauvreté',
