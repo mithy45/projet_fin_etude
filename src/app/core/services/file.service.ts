@@ -12,7 +12,6 @@ export class FileService {
       "Démographie": [
         'Naissances',
         'Indice de fécondite',
-        'Fécondité des femmes selon le niveau de vie',
         'Mortalite infantile',
         'Âge moyen de la mère à l\'accouchement - France métropolitaine',
         'Décès',
