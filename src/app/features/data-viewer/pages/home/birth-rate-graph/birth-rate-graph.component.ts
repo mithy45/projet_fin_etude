@@ -14,7 +14,7 @@ export class BirthRateGraphComponent {
   public jsonData: any;
   birth_rate_file: string = "Naissances";
   important_point: number[] = [1914, 1918, 1939, 1945, 1950, 1973, 1974, 1979, 1980, 1986, 1990, 1991, 1993, 2001, 2002, 2008];
-  political_decision_years: number[] = [1920, 1933, 1938, 1967, 1971, 1974, 1977, 1978, 1994, 2002, 2005, 2006, 2008, 2014, 2021];
+  political_decision_years: number[] = [1920, 1932, 1938, 1967, 1971, 1974, 1977, 1978, 1994, 2002, 2005, 2006, 2008, 2014, 2021];
 
   constructor(private fileParserService: FileParserService) {}
 

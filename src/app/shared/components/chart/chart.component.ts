@@ -14,6 +14,7 @@ export class ChartComponent {
 
   @Input() chartType: string = 'line';
   @Input() fileList: string[] = [];
+  @Input() smooth: boolean = true;
 
   chart!: Chart;
 
@@ -33,7 +34,6 @@ export class ChartComponent {
     const scaleOptions: any = {};
     if (this.fileList.length == 1) {
       scaleOptions.x = {
-        type: 'linear',
         title: {
           display: true,
           text: data.column.length > 1 ? data.column[0].id.split('_-_')[0] : "Année"
@@ -47,7 +47,6 @@ export class ChartComponent {
       }
     } else {
       scaleOptions.x = {
-        type: 'linear',
         title: {
           display: true,
           text: "Année"
@@ -61,6 +60,9 @@ export class ChartComponent {
           }
         }
       }
+    }
+    if (this.smooth) {
+      scaleOptions.x.type = 'linear';
     }
     const ctx = this.chartCanvas.nativeElement.getContext('2d');
     this.chart = new Chart(ctx, {
