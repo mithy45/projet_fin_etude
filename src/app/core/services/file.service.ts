@@ -25,7 +25,7 @@ export class FileService {
         'Taux d\'inflation',
         'Taux de smic',
         'Taux de pauvreté',
-        'Taux de chomage'
+        'Taux de chomage',
       ],
       "Autre" : [
         "Nombre d'ivg",

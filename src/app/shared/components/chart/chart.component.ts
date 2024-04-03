@@ -84,7 +84,7 @@ export class ChartComponent {
             text: this.title ? this.title : this.fileList.join(', ')
           },
           legend: {
-            onClick: (e) => e.native?.stopPropagation()
+            // onClick: (e) => e.native?.stopPropagation()
           }
         }
       }

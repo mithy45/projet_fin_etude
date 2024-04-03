@@ -85,7 +85,7 @@ export class FileParserService {
         parseData.y.push({
           label: datas[i].column[0],
           data: [],
-          yAxisID: 'y',
+          yAxisID: 'y0',
         });
       } else {
         parseData.y.push({
