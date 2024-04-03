@@ -65,6 +65,13 @@
     <app-correlation-chart [xFile]="'Mortalite infantile'" [yFile]="'Naissances'" [method]="'correlation'"> </app-correlation-chart>
     <app-correlation-chart [xFile]="'Croissance PIB'" [yFile]="'Naissances'" [method]="'correlation'"> </app-correlation-chart>
     <app-chart [fileList]="['Chance de grossesse chaque mois selon l\'âge']" [smooth]="false"></app-chart>
+    <app-chart [noTitleAxes]="true" title="Part des prestations sociales dans la richesse nationale depuis 1981 (% du PIB)" [fileList]="[
+      'Parts prestations sociales_1', 
+      'Parts prestations sociales_4',
+      'Parts prestations sociales_6',
+      'Parts prestations sociales_7',
+      'Parts prestations sociales_8',
+      ]" [smooth]="false"></app-chart>
     
     <!-- <app-chart [fileList]="['Évolution de la dépense des ménages', 'Pouvoir d\'achat des ménages']"></app-chart> -->
 </div>

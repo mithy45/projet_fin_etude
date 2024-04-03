@@ -15,13 +15,16 @@ export class ChartComponent {
   @Input() chartType: string = 'line';
   @Input() fileList: string[] = [];
   @Input() smooth: boolean = true;
+  @Input() sameY: boolean = true;
+  @Input() title: string = "";
+  @Input() noTitleAxes = false;
 
   chart!: Chart;
 
   constructor(private fileParserService: FileParserService) {}
 
-  ngOnInit(): void {
-    this.fileParserService.getCsvData(this.fileList)
+  ngOnInit(): void {  
+    this.fileParserService.getCsvData(this.fileList, false, this.sameY)
     .subscribe(data => {
       this.createChart(data);
     });
@@ -32,16 +35,16 @@ export class ChartComponent {
       this.chart.destroy();
     }
     const scaleOptions: any = {};
-    if (this.fileList.length == 1) {
+    if (this.sameY) {
       scaleOptions.x = {
         title: {
-          display: true,
+          display: !this.noTitleAxes,
           text: data.column.length > 1 ? data.column[0].id.split('_-_')[0] : "Année"
         }
       }
       scaleOptions.y0 = {
         title: {
-          display: true,
+          display: !this.noTitleAxes,
           text: data.column.length > 1 ? data.column[1].id.split('_-_')[0] : data.column[0].id.split('_-_')[0]
         }
       }
@@ -78,7 +81,7 @@ export class ChartComponent {
         plugins: {
           title: {
             display: true,
-            text: this.fileList.join(', ')
+            text: this.title ? this.title : this.fileList.join(', ')
           },
           legend: {
             onClick: (e) => e.native?.stopPropagation()
