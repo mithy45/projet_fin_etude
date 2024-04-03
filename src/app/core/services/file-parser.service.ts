@@ -12,14 +12,14 @@ export class FileParserService {
     private fileService: FileService) { }
 
   // Récupère le fichier, le lis et applique les autres fonctions.
-  getCsvData(files: string[], color = false): Observable<any> {
+  getCsvData(files: string[], color = false, sameY = false): Observable<any> {
     let datas : any[] = [];
     const observer = new Observable<any[]>(observer => {
       for (let i = 0; i < files.length; i++) {
         this.http.get('../../assets/bdd/' + files[i] + '.csv', {responseType: 'text'}).subscribe(data => {
           datas.push(this.parseCsvData(data));
           if (i == files.length - 1) {
-            datas = this.mergeData(datas, files, color);
+            datas = this.mergeData(datas, files, color, sameY);
             observer.next(datas);
           }
         });
@@ -72,7 +72,7 @@ export class FileParserService {
   }
 
   // Fusionne les données parsées pour chaque fichier.
-  mergeData (datas: any, fileNames: any, color = false) {
+  mergeData (datas: any, fileNames: any, color = false, sameY=false) {
     let parseData : any = {
       x: [],
       y: [],
@@ -81,11 +81,20 @@ export class FileParserService {
     };
 
     for (let i = 0; i < datas.length; i++) {
-      parseData.y.push({
-        label: fileNames[i],
-        data: [],
-        yAxisID: 'y' + i,
-      });
+      if (sameY) {
+        parseData.y.push({
+          label: datas[i].column[0],
+          data: [],
+          yAxisID: 'y',
+        });
+      } else {
+        parseData.y.push({
+          label: datas[i].column[0],
+          data: [],
+          yAxisID: 'y' + i,
+        });
+      }
+
       if (color) {
         parseData.y[parseData.y.length - 1].pointBackgroundColor = [];
       }
