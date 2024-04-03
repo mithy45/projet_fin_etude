@@ -60,11 +60,7 @@
 <div id="chart-correlation-container">
     <!-- <app-correlation-chart [xFile]="'Mortalite infantile'" [yFile]="'Naissances'" [method]="'division'"> </app-correlation-chart> -->
     <!-- <app-correlation-chart [xFile]="'Mortalite infantile'" [yFile]="'Naissances'" [method]="'correlation'"> </app-correlation-chart> -->
-    <app-chart [fileList]="['Fécondité des femmes selon le niveau de vie']"></app-chart>
-    <app-chart [fileList]="['Âge moyen de la mère à l\'accouchement']"></app-chart>
-    <app-correlation-chart [xFile]="'Mortalite infantile'" [yFile]="'Naissances'" [method]="'correlation'"> </app-correlation-chart>
-    <app-correlation-chart [xFile]="'Croissance PIB'" [yFile]="'Naissances'" [method]="'correlation'"> </app-correlation-chart>
-    <app-chart [fileList]="['Chance de grossesse chaque mois selon l\'âge']" [smooth]="false"></app-chart>
+    <app-chart [fileList]="['Fécondité des femmes selon le niveau de vie (2012-2017)']"></app-chart>
     <app-chart [noTitleAxes]="true" title="Part des prestations sociales dans la richesse nationale depuis 1981 (% du PIB)" [fileList]="[
       'Parts prestations sociales_1', 
       'Parts prestations sociales_4',
@@ -72,10 +68,16 @@
       'Parts prestations sociales_7',
       'Parts prestations sociales_8',
       ]" [smooth]="false"></app-chart>
+    <app-chart [fileList]="['Âge moyen de la mère à l\'accouchement']"></app-chart>
+    <app-chart [fileList]="['Chance de grossesse chaque mois selon l\'âge']" [smooth]="false"></app-chart>
+
+    <app-chart [noTitleAxes]="true" title="Nombre de femmes actives en milliers par tranche d'âge" [fileList]="[
+    'Nombre de femmes actives 15-24 ans',
+    'Nombre de femmes actives 25-49 ans',
+    'Nombre de femmes actives 50-64 ans'
+    ]" [smooth]="false"></app-chart>
+    <app-correlation-chart [xFile]="'Croissance PIB'" [yFile]="'Naissances'" [method]="'correlation'"> </app-correlation-chart>
+    <app-correlation-chart [xFile]="'Mortalite infantile'" [yFile]="'Naissances'" [method]="'correlation'"> </app-correlation-chart>
     
-      <app-chart [noTitleAxes]="true" title="Nombre de femmes actives en milliers par tranche d'âge" [fileList]="[
-      'Nombre de femmes actives 15-24 ans',
-      'Nombre de femmes actives 25-49 ans',
-      'Nombre de femmes actives 50-64 ans'
-      ]" [smooth]="false"></app-chart>
+    
 </div>
