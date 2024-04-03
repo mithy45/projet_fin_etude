@@ -54,7 +54,7 @@ export class BirthRateGraphComponent {
         datasets: [this.jsonData.y[0],
         {
           type: 'scatter',
-          label: 'Crises majeures',
+          label: 'Événements majeures',
           data: [],
           backgroundColor: 'red',
           borderColor: '#36A2EB'
@@ -68,7 +68,7 @@ export class BirthRateGraphComponent {
         },
         {
           type: 'scatter',
-          label: 'Crises majeures + décisions politiques',
+          label: 'Événements majeures + décisions politiques',
           data: [],
           backgroundColor: 'yellow',
           borderColor: '#36A2EB'
