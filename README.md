@@ -33,7 +33,7 @@ Si besoin d'ajouter des données, il suffit d'ajouter le fichier dans le répert
 
 #### Conditions sur le fichier:
 - Doit être de type **csv** avec un séparateur point-virgule (;)
-- La première colonne doit être la date
+- La première colonne doit être la date croissante
 - Seule la deuxième colonne est interprétée (si plusieurs données dans un fichier, il faut le décomposer).
 
 ## Build
